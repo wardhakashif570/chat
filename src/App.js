@@ -5,25 +5,25 @@ import HomePage from './containers/HomePage';
 import LoginPage from './containers/LoginPage';
 import RegisterPage from './containers/RegisterPage';
 import PrivateRoute from './components/PrivateRoute';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { isLoggedInUser } from './actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { isLoggedInUser } from './actions';
 
 function App() {
 
-  // const auth = useSelector(state => state.auth);
-  // const dispatch = useDispatch()
+  const auth = useSelector(state => state.auth);
+  const dispatch = useDispatch()
 
 
-  // useEffect(() => {
-  //   if(!auth.authenticated){
-  //     dispatch(isLoggedInUser())
-  //   }
-  // }, []);
+  useEffect(() => {
+    if(!auth.authenticated){
+      dispatch(isLoggedInUser())
+    }
+  }, []);
 
 
   return (
     <div className="App">
-    <Router>
+      <Router>
         {/* only logged in user can access this home route */}
         <PrivateRoute path="/" exact component={HomePage} />
 
