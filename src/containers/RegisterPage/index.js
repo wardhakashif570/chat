@@ -4,6 +4,7 @@ import Card from '../../components/UI/Card';
 import { signup } from '../../actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import { logout } from '../../actions/auth.actions';
 
 /**
 * @author
@@ -34,8 +35,10 @@ const RegisterPage = (props) => {
 
 
   if(auth.authenticated){
-    return <Redirect to={`/`} />
+    dispatch(logout(auth.uid))
+    return <Redirect to={`/login`} />
   }
+
 
   return(
     <Layout>
