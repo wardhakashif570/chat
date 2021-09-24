@@ -3,6 +3,7 @@ import './style.css';
 import Layout from '../../components/Layout';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRealtimeUsers } from '../../actions/user.actions';
+import userimg from '../../image/user.jpg'
 
 
 const User = (props) => {
@@ -13,11 +14,13 @@ const User = (props) => {
     return (
         <div onClick={() => onClick(user)} className="displayName">
             <div className="displayPic">
-                <img src="https://i.pinimg.com/originals/be/ac/96/beac96b8e13d2198fd4bb1d5ef56cdcf.jpg" alt="" />
+                <img src={userimg} alt="" />
             </div>
+
             <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between', margin: '0 10px' }}>
                 <span >{user.firstName} {user.lastName}</span>
-                <span>{user.isOnline ? `onlineStatus` : `onlineStatus off`}</span>
+                {/* <span>{user.isOnline ? `onlineStatus` : `onlineStatus off`}</span> */}
+                <span>{user.isOnline ? `online` : `offline`}</span>
             </div>
         </div>
     );
@@ -44,20 +47,20 @@ const HomePage = (props) => {
 
     useEffect(() => {
         return () => {
-            //cleanup
+
             unsubscribe.then(f => f()).catch(error => console.log(error));
 
         }
     }, []);
 
 
-    const initChat = (user) => {
+    // const initChat = (user) => {
 
-        setChatStarted(true)
-        setChatUser(`${user.firstName} ${user.lastName}`)
-        // setUserUid(user.uid);
+    //     setChatStarted(true)
+    //     setChatUser(`${user.firstName} ${user.lastName}`)
+    //     // setUserUid(user.uid);
 
-    }
+    // } 
     return (
         <Layout>
             <section className="container">
@@ -68,7 +71,7 @@ const HomePage = (props) => {
                             user.users.map(user => {
                                 return (
                                     <User
-                                        onClick={initChat}
+                                        // onClick={initChat}
                                         key={user.uid}
                                         user={user}
                                     />
