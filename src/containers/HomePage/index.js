@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import './style.css';
 import Layout from '../../components/Layout';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRealtimeUsers } from '../../actions/user.actions';
+import { getRealtimeUsers, updateMessage, getRealtimeConversations } from '../../actions/user.actions';
 import userimg from '../../image/user.jpg'
+
 
 
 const User = (props) => {
@@ -16,21 +17,22 @@ const User = (props) => {
             <div className="displayPic">
                 <img src={userimg} alt="" />
             </div>
-
             <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between', margin: '0 10px' }}>
-                <span >{user.firstName} {user.lastName}</span>
-                {/* <span>{user.isOnline ? `onlineStatus` : `onlineStatus off`}</span> */}
-                <span>{user.isOnline ? `online` : `offline`}</span>
+                <span style={{ fontWeight: 500 }}>{user.firstName} {user.lastName}</span>
+                <span className={user.isOnline ? `onlineStatus` : `onlineStatus off`}></span>
             </div>
         </div>
     );
 }
+
 const HomePage = (props) => {
     const dispatch = useDispatch();
     const auth = useSelector(state => state.auth);
     const user = useSelector(state => state.user);
     const [chatStarted, setChatStarted] = useState(false);
     const [chatUser, setChatUser] = useState('');
+    const [message, setMessage] = useState('');
+    const [userUid, setUserUid] = useState(null);
     let unsubscribe;
 
     useEffect(() => {
@@ -54,13 +56,36 @@ const HomePage = (props) => {
     }, []);
 
 
-    // const initChat = (user) => {
+    const initChat = (user) => {
 
-    //     setChatStarted(true)
-    //     setChatUser(`${user.firstName} ${user.lastName}`)
-    //     // setUserUid(user.uid);
+        setChatStarted(true)
+        setChatUser(`${user.firstName} ${user.lastName}`)
+        setUserUid(user.uid);
 
-    // } 
+        dispatch(getRealtimeConversations({ uid_1: auth.uid, uid_2: user.uid }));
+
+    }
+
+    const submitMessage = (e) => {
+
+        const msgObj = {
+            user_uid_1: auth.uid,
+            user_uid_2: userUid,
+            message
+        }
+
+        if (message !== "") {
+            dispatch(updateMessage(msgObj))
+                .then(() => {
+                    setMessage('')
+                });
+        }
+        console.log(msgObj)
+    }
+
+
+
+
     return (
         <Layout>
             <section className="container">
@@ -71,7 +96,7 @@ const HomePage = (props) => {
                             user.users.map(user => {
                                 return (
                                     <User
-                                        // onClick={initChat}
+                                        onClick={initChat}
                                         key={user.uid}
                                         user={user}
                                     />
@@ -80,25 +105,30 @@ const HomePage = (props) => {
                     }
                 </div>
                 <div className="chatArea">
-                    {
-                        chatStarted ? chatUser : ''
-                    }
-                    <div className="messageSections">
+                    <div className="chatHeader">
                         {
-                            chatStarted ?
-                                <div className="chatControls">
-                                    <textarea
-
-                                        placeholder="Write Message"
-                                    />
-                                    <button >Send</button>
-                                </div> : null
+                            chatStarted ? chatUser : null
                         }
+                    </div>
+
+                    <div className="messageSections">
+                    {
+                  chatStarted ? 
+                  user.conversations.map(con =>
+                    <div style={{ textAlign: con.user_uid_1 == auth.uid ? 'right' : 'left' }}>
+                    <p className="messageStyle" >{con.message}</p>
+                  </div> )
+                  : null
+                }
 
                     </div>
                     <div className="chatControls">
-                        <textarea />
-                        <button>Send</button>
+                        <textarea
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            placeholder="Write Message"
+                        />
+                        <button onClick={submitMessage}>Send</button>
                     </div>
                 </div>
             </section>
